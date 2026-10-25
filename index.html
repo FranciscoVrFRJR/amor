@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feliz Aniversário, Minha Amada Júlia! ❤️</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Ícone da aba do navegador -->
+    <link rel="icon" href="icone.ico" type="image/x-icon">
+    <!-- Fontes do Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Dancing+Script:wght@600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Estilos Personalizados e Animações */
+        body {
+            font-family: 'Lora', serif;
+            background: linear-gradient(135deg, #fff0f5 0%, #ffd1dc 50%, #ffe4e1 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .font-title {
+            font-family: 'Cinzel', serif;
+        }
+
+        .font-script {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .font-sans-clean {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Canvas de Corações Flutuantes */
+        #heartsCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Efeito de Envelope Interativo */
+        .envelope-wrapper {
+            perspective: 1000px;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .envelope {
+            position: relative;
+            background-color: #ffffff;
+            box-shadow: 0 20px 40px rgba(219, 112, 147, 0.25);
+            transition: transform 0.8s ease, box-shadow 0.8s ease;
+            border: 1px solid rgba(255, 182, 193, 0.4);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, #fff5f8 0%, #ffffff 100%);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform-origin: top center;
+            transition: transform 0.8s ease;
+            z-index: 10;
+            border-top: 1px solid rgba(255, 182, 193, 0.5);
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        /* Brilho e Efeitos Elegantes */
+        .glow-effect {
+            box-shadow: 0 0 25px rgba(244, 114, 182, 0.3);
+        }
+
+        .wax-seal {
+            background: radial-gradient(circle at 30% 30%, #e11d48, #9f1239);
+            box-shadow: 0 4px 10px rgba(159, 18, 57, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .wax-seal:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(159, 18, 57, 0.6);
+        }
+
+        /* Animação do Texto caindo suavemente */
+        .letter-content {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease 0.4s, transform 1s ease 0.4s;
+        }
+
+        .envelope.open .letter-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fff0f5;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f472b6;
+            border-radius: 10px;
+        }
+
+        /* Estilo Parágrafo Elegante */
+        .poem-paragraph {
+            text-align: justify;
+            text-justify: inter-word;
+            line-height: 1.85;
+            color: #374151;
+            position: relative;
+        }
+
+        .poem-paragraph::first-letter {
+            font-size: 2.2rem;
+            font-family: 'Dancing Script', cursive;
+            color: #db2777;
+            float: left;
+            line-height: 1;
+            padding-right: 8px;
+            padding-top: 2px;
+            font-weight: bold;
+        }
+
+        /* Botão Flutuante de Áudio */
+        .audio-btn {
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(244, 114, 182, 0.4);
+        }
+
+        /* Animação Pulse suave */
+        @keyframes subtlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        .pulse-subtle {
+            animation: subtlePulse 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="relative flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-10">
+
+    <!-- Canvas de Animação dos Corações -->
+    <canvas id="heartsCanvas"></canvas>
+
+    <!-- Elemento de Áudio de Fundo (M.mp3) em Loop -->
+    <audio id="bgMusic" src="M.mp3" preload="auto" loop></audio>
+
+    <!-- Elemento de Áudio Gravado (G.mp3) -->
+    <audio id="voiceAudio" src="G.mp3" preload="auto"></audio>
+
+    <!-- Barra de Controles Superiores (Som e Confete Extra) -->
+    <div class="fixed top-4 right-4 z-50 flex gap-3">
+        <!-- Botão de Música -->
+        <button id="musicToggleBtn" onclick="toggleAudio()" class="audio-btn p-3 rounded-full text-pink-600 hover:text-pink-700 shadow-md transition-all duration-300 flex items-center justify-center w-12 h-12" title="Música de Fundo">
+            <i id="musicIcon" class="fas fa-music text-lg"></i>
+        </button>
+        <!-- Botão de Voz do Francisco (Ouvir Áudio Gravado) -->
+        <button id="voiceToggleBtn" onclick="toggleVoiceNarration()" class="audio-btn p-3 rounded-full text-rose-600 hover:text-rose-700 shadow-md transition-all duration-300 flex items-center justify-center w-12 h-12" title="Ouvir a Voz do Francisco ❤️">
+          <i id="voiceIcon" class="fas fa-volume-up text-lg"></i>
+        </button>
+    </div>
+
+    <!-- Conteiner Principal -->
+    <main class="w-full max-w-3xl z-10 my-auto py-8">
+        
+        <!-- ENVELOPE / CARTA CONTAINER -->
+        <div id="envelopeWrapper" class="envelope-wrapper w-full">
+            <div id="envelope" class="envelope rounded-2xl p-6 sm:p-10 md:p-14 relative overflow-hidden transition-all duration-700">
+                
+                <!-- ABA DO ENVELOPE (Apenas visível antes de abrir) -->
+                <div id="envelopeFlap" class="envelope-flap flex items-end justify-center pb-4 cursor-pointer" onclick="openLetter()">
+                    <!-- Selo de Cera / Botão de Abertura -->
+                    <div class="wax-seal w-16 h-16 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center text-white cursor-pointer z-20 transform translate-y-8 shadow-2xl">
+                        <i class="fas fa-heart text-xl sm:text-2xl mb-1 text-pink-200"></i>
+                        <span class="font-sans-clean text-[10px] sm:text-xs tracking-widest uppercase font-semibold">Abrir</span>
+                    </div>
+                </div>
+
+                <!-- TELA INICIAL (CAPA DO ENVELOPE) -->
+                <div id="coverContent" class="py-16 sm:py-24 text-center flex flex-col items-center justify-center cursor-pointer" onclick="openLetter()">
+                    <div class="inline-block p-4 rounded-full bg-pink-50 mb-6 pulse-subtle">
+                        <i class="fas fa-envelope-open-text text-4xl sm:text-5xl text-pink-500"></i>
+                    </div>
+                    <h2 class="font-title text-2xl sm:text-3xl text-gray-800 font-bold mb-3 tracking-wide">Uma Homenagem Especial</h2>
+                    <p class="font-script text-2xl sm:text-3xl text-pink-600 mb-6">Para a minha noiva, Júlia ❤️</p>
+                    <p class="font-sans-clean text-xs sm:text-sm text-gray-500 tracking-widest uppercase">Toque no selo para abrir sua declaração</p>
+                </div>
+
+                <!-- CONTEÚDO DA CARTA (OCULTO INICIALMENTE) -->
+                <div id="letterContent" class="letter-content hidden">
+                    
+                    <!-- Cabeçalho Elegante -->
+                    <header class="text-center mb-10 pb-8 border-b border-pink-100 relative">
+                        <div class="inline-block px-4 py-1 bg-pink-100 text-pink-700 rounded-full font-sans-clean text-xs font-semibold tracking-wider uppercase mb-3">
+                            <i class="far fa-calendar-alt mr-1"></i> 29 de Outubro
+                        </div>
+                        <h1 class="font-title text-2xl sm:text-4xl text-gray-800 font-bold mb-2 tracking-wide leading-tight">
+                            Feliz Aniversário, Minha Amada Júlia!
+                        </h1>
+                        <p class="font-script text-2xl sm:text-3xl text-pink-500 mt-2">Para o amor da minha vida</p>
+                        
+                        <!-- Ornamento de Linha -->
+                        <div class="flex justify-center items-center gap-3 mt-4 text-pink-300">
+                            <span class="w-12 h-[1px] bg-pink-200"></span>
+                            <i class="fas fa-infinity text-sm"></i>
+                            <span class="w-12 h-[1px] bg-pink-200"></span>
+                        </div>
+                    </header>
+
+                    <!-- Poema / Mensagem Principal -->
+                    <article class="space-y-6 text-gray-700 text-base sm:text-lg leading-relaxed">
+                        
+                        <p class="poem-paragraph">
+                            Se a minha vida fosse um código bruto a ser compilado, tu serias o código fonte, a lógica pura que dá sentido a tudo, o Assembly que constrói todo o sentido existencial da minha paixão. Nenhum algoritmo do mundo foi capaz de calcular a imensidão da tua beleza. Minhas mãos, que passavam as noites sustentando o fluxo invisível de redes e operando a engenharia de fluxos e dados, encontram em ti o único porto onde o sinal é eterno, onde não há perda de pacotes, latência ou falha no sistema.
+                        </p>
+
+                        <p class="poem-paragraph">
+                            Se estivesse ao meu alcance redesenhar a arquitetura do cosmos, eu faria da imensidão do céu a minha arte e sublimaria o teu rosto radiante diretamente na coroa do sol, para que todo o planeta testemunhasse, a cada amanhecer, a mulher mais bela e luminosa de toda a existência. E, com a mesma precisão com que eternizo a tinta nas minhas peças, eu estamparia o teu nome na superfície fria da lua, gravando-o em relevo perpétuo para que a noite inteira fosse um tributo silencioso ao teu reflexo, iluminando a escuridão e provando ao universo inteiro quem é a verdadeira dona de todo o meu dia e da minha noite.
+                        </p>
+
+                        <p class="poem-paragraph">
+                            Analiso o mercado, estudo gráficos, protejo o futuro e invisto em ativos, criptomoedas, ações e na solidez da renda fixa, sabendo calcular com precisão os riscos de amanhã. Mas amar-te, Júlia, é o único investimento de risco infinito onde eu aposto tudo o que sou, sem margem de erro, sabendo que o teu amor é o meu maior e mais valioso patrimônio, é o valor intrínseco que dá sentido a minha vida, és o dividendo mais rico que a vida me pagou, as Seeds que blindei no cofre mais seguro do meu peito.
+                        </p>
+
+                        <p class="poem-paragraph">
+                            E se a rotina pesa, eu encontro no teu olhar de psicóloga o refúgio que reseta as minhas certezas e acalma o meu mundo. Entre o calor da minha prensa, o tocar dos meus instrumentos musicais, o brilho dos meus hobbies e a rota complexa que traçamos para o nosso futuro de noivos, eu escolho a ti, todos os dias, com a força do som de um contrabaixo com volume explosivo numa caixa de som de alto falante de 10 polegadas e com Overdrive nas alturas, com a constância de quem sabe para onde quer ir.
+                        </p>
+
+                        <div class="my-8 p-6 bg-pink-50/70 rounded-2xl border border-pink-100 text-center relative overflow-hidden">
+                            <i class="fas fa-quote-left text-pink-200 text-4xl absolute top-2 left-3 -z-0"></i>
+                            <p class="poem-paragraph text-pink-900 font-medium italic relative z-10 pt-2">
+                                Feliz aniversário, meu amor. Que o nosso ciclo seja o maior e dos melhores investimentos, e que a nossa história seja o código mais perfeito já escrito, transbordando em arte, música, lógica e uma paixão que nem o tempo, nem o universo, conseguirão jamais apagar.
+                            </p>
+                        </div>
+
+                    </article>
+
+                    <!-- Assinatura Elegante -->
+                    <footer class="mt-12 pt-6 border-t border-pink-100 text-right">
+                        <p class="font-script text-3xl text-pink-600 mb-1">Com todo o meu amor, carinho e devoção,</p>
+                        <p class="font-title font-bold text-gray-800 text-lg tracking-wider">Para Sempre Seu Noivo ❤️</p>
+                    </footer>
+
+                    <!-- Ícone no final inferior centralizado da div envelope -->
+                    <div class="flex justify-center mt-6">
+                        <img src="icone.png" alt="Ícone" style="max-width: 50px; max-height: 50px;" class="w-[50px] h-[50px] object-contain">
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Rodapé Sutil -->
+    <footer class="text-center text-xs text-pink-700/60 font-sans-clean mt-auto pb-4 z-10">
+        Feito 100% por mim(Francisco) para a mulher mais linda do mundo(Baby) - 29/10
+    </footer>
+
+    <!-- LÓGICA DE ÁUDIO GRAVADO (G.mp3) -->
+    <script>
+        let isVoicePlaying = false;
+        const voiceAudio = document.getElementById('voiceAudio');
+
+        function toggleVoiceNarration() {
+            const voiceIcon = document.getElementById('voiceIcon');
+            const voiceBtn = document.getElementById('voiceToggleBtn');
+
+            if (!voiceAudio) return;
+
+            if (isVoicePlaying) {
+                voiceAudio.pause();
+                isVoicePlaying = false;
+                voiceIcon.className = "fas fa-volume-up text-lg";
+                voiceBtn.classList.remove('bg-rose-100', 'animate-pulse');
+            } else {
+                if (!isMusicPlaying) {
+                    toggleAudio();
+                }
+
+                voiceAudio.play().then(() => {
+                    isVoicePlaying = true;
+                    voiceIcon.className = "fas fa-pause text-lg text-rose-600";
+                    voiceBtn.classList.add('bg-rose-100', 'animate-pulse');
+                }).catch(error => {
+                    console.error("Erro ao reproduzir o áudio:", error);
+                    alert("Não foi possível reproduzir o arquivo G.mp3. Verifique se ele está na mesma pasta do arquivo HTML.");
+                });
+            }
+
+            voiceAudio.onended = () => {
+                isVoicePlaying = false;
+                voiceIcon.className = "fas fa-volume-up text-lg";
+                voiceBtn.classList.remove('bg-rose-100', 'animate-pulse');
+            };
+        }
+    </script>
+
+    <!-- LÓGICA DE ÁUDIO DE FUNDO (M.mp3 EM LOOP CONTÍNUO) E ANIMAÇÕES -->
+    <script>
+        let isMusicPlaying = false;
+        const bgMusic = document.getElementById('bgMusic');
+        bgMusic.loop = true; // Garante explicitamente o loop via JavaScript
+
+        function toggleAudio() {
+            const musicIcon = document.getElementById('musicIcon');
+            const musicBtn = document.getElementById('musicToggleBtn');
+
+            if (!bgMusic) return;
+
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                isMusicPlaying = false;
+                musicIcon.className = "fas fa-music text-lg";
+                musicBtn.classList.remove('bg-pink-100', 'animate-pulse');
+            } else {
+                bgMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    musicIcon.className = "fas fa-pause text-lg text-pink-600";
+                    musicBtn.classList.add('bg-pink-100', 'animate-pulse');
+                }).catch(error => {
+                    console.error("Erro ao reproduzir a música:", error);
+                    alert("Não foi possível reproduzir o arquivo M.mp3. Verifique se ele está na mesma pasta do arquivo HTML.");
+                });
+            }
+        }
+
+        function openLetter() {
+            const envelope = document.getElementById('envelope');
+            const envelopeFlap = document.getElementById('envelopeFlap');
+            const coverContent = document.getElementById('coverContent');
+            const letterContent = document.getElementById('letterContent');
+
+            if (!isMusicPlaying) {
+                toggleAudio();
+            }
+
+            envelopeFlap.style.transform = 'rotateX(180deg)';
+            envelopeFlap.style.opacity = '0';
+            envelopeFlap.style.pointerEvents = 'none';
+
+            setTimeout(() => {
+                coverContent.classList.add('hidden');
+                letterContent.classList.remove('hidden');
+                envelope.classList.add('open', 'glow-effect');
+                
+                triggerHeartShower();
+            }, 400);
+        }
+
+        const canvas = document.getElementById('heartsCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        class Heart {
+            constructor(customX, customY, customSpeed) {
+                this.reset(customX, customY, customSpeed);
+            }
+
+            reset(customX, customY, customSpeed) {
+                this.x = customX !== undefined ? customX : Math.random() * width;
+                this.y = customY !== undefined ? customY : height + 20;
+                this.size = Math.random() * 14 + 8;
+                this.speedY = customSpeed || (Math.random() * 1.2 + 0.6);
+                this.speedX = Math.sin(Math.random() * Math.PI) * 0.8;
+                this.opacity = Math.random() * 0.5 + 0.3;
+                this.color = `hsla(${330 + Math.random() * 25}, 85%, ${70 + Math.random() * 20}%, ${this.opacity})`;
+                this.swing = Math.random() * 0.05;
+                this.swingAngle = Math.random() * Math.PI * 2;
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.swingAngle += this.swing;
+                this.x += Math.sin(this.swingAngle) * 0.8;
+
+                if (this.y < -30) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                const topCurveHeight = this.size * 0.3;
+                ctx.moveTo(0, topCurveHeight);
+                ctx.bezierCurveTo(0, 0, -this.size / 2, 0, -this.size / 2, topCurveHeight);
+                ctx.bezierCurveTo(-this.size / 2, (this.size + topCurveHeight) / 2, 0, this.size, 0, this.size);
+                ctx.bezierCurveTo(0, this.size, this.size / 2, (this.size + topCurveHeight) / 2, this.size / 2, topCurveHeight);
+                ctx.bezierCurveTo(this.size / 2, 0, 0, 0, 0, topCurveHeight);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        const hearts = Array.from({ length: 35 }, () => new Heart());
+
+        function triggerHeartShower() {
+            for (let i = 0; i < 25; i++) {
+                setTimeout(() => {
+                    hearts.push(new Heart(Math.random() * width, height + 10, Math.random() * 2.5 + 1.5));
+                }, i * 60);
+            }
+        }
+
+        function animateHearts() {
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let i = 0; i < hearts.length; i++) {
+                hearts[i].update();
+                hearts[i].draw();
+            }
+
+            if (hearts.length > 60) {
+                hearts.splice(0, hearts.length - 60);
+            }
+
+            requestAnimationFrame(animateHearts);
+        }
+
+        window.onload = () => {
+            animateHearts();
+        };
+    </script>
+</body>
+</html>
